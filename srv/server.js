@@ -27,22 +27,26 @@ var app = express();
 
 //Compression
 app.use(require("compression")({
-  threshold: "1b"
+	threshold: "1b"
 }));
 
 //Helmet for Security Policy Headers
 const helmet = require("helmet");
 // ...
 app.use(helmet());
-app.use(helmet.contentSecurityPolicy({
+/*app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: ["'self'"],
-    styleSrc: ["'self'", "sapui5.hana.ondemand.com"],
-    scriptSrc: ["'self'", "sapui5.hana.ondemand.com"]
+    scriptSrc: ["'self'", "https://sapui5.hana.ondemand.com", "code.jquery.com", "rawgit.com"],
+    fontSrc: ["'self'", "https://*"],
+    prefetchSrc: ["'self'", "https://*"],    
+    styleSrc: ["'self'", "https://*"] 
   }
-}));
+}));*/
 // Sets "Referrer-Policy: no-referrer".
-app.use(helmet.referrerPolicy({ policy: "no-referrer" }));
+app.use(helmet.referrerPolicy({
+	policy: "no-referrer"
+}));
 
 //Build a JWT Strategy from the bound UAA resource
 passport.use("JWT", new xssec.JWTStrategy(xsenv.getServices({
@@ -62,7 +66,7 @@ app.use(passport.initialize());
 
 var hanaOptions = xsenv.getServices({
 	hana: {
-		tag: "hana"
+		plan: "hdi-shared"
 	}
 });
 
@@ -77,17 +81,16 @@ app.use(
 
 //CDS OData V4 Handler
 var options = {
-	driver: "hana",
+	kind: "hana",
 	logLevel: "error"
 };
 
 //Use Auto Lookup in CDS 2.10.3 and higher
-//Object.assign(options, hanaOptions.hana, {
-//	driver: options.driver
-//});
+/*Object.assign(options, hanaOptions.hana, {
+	driver: options.driver
+});*/
 
 cds.connect(options);
-
 var odataURL = "/odata/v4/opensap.hana.CatalogService/";
 // Main app
 cds.serve("gen/csn.json", {

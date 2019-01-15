@@ -143,3 +143,5 @@ resources:
       service-name: sap.hana.democontent.epm.services.images
     properties:
       xshttpdest-images-service-name: '${service-name}'
+  - name: openSAP-secure
+    type: com.sap.xs.hana-securestore
